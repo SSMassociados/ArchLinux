@@ -1,0 +1,12 @@
+xdg-mime query default x-scheme-handler/magnet
+gvfs-mime --query x-scheme-handler/magnet
+
+gvfs-mime --set x-scheme-handler/magnet qBittorrent.desktop
+
+xdg-mime default qBittorent.desktop x-scheme-handler/magnet
+
+xdg-mime default pcmanfm.desktop inode/directory
+xdg-mime default pcmanfm.desktop x-scheme-handler/file
+
+inode/directory=pcmanfm.desktop;
+

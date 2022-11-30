@@ -1,0 +1,225 @@
+
+O arquivo de configuração do Samba tem um formato razoavelmente simples que usa três construções diferentes:
+
+Seções: as seções agrupam a configuração em áreas independentes. Por exemplo, um compartilhamento de arquivo tem a sua própria seção.
+Parâmetros: os parâmetros são pares de chave/valor. As chaves são atributos bem conhecidos, como “somente leitura”.
+Comentários: os comentários
+permitem fazer anotações no arquivo de configuração que não afetam a
+configuração. Por exemplo, para indicar o ticket de help desk que os
+documentos compartilham.
+
+Seção [global]
+Autor: Bruno Lopes
+
+Voltar para tutoriais
+
+  Os parâmetros especificados nesta seção têm efeito em todo o servidor Samba, incluindo os compartilhamentos. Caso o parâmetro seja novamente especificado para um compartilhamento especifico, o valor do compartilhamento terá prioridade.
+
+  Por exemplo, se o parâmetro guest user = nobody for usado na seção [global] e o parâmetro guest user = Admin for usado no compartilhamento [Admins], o usuário que fará acesso publico a todos os compartilhamentos do servidor será nobody, exceto para o compartilhamento [Admins], que será feito pelo usuário Admin.
+
+
+Nomes e grupos de trabalho
+
+    netbios name = [nome_do_servidor]
+
+Especifica o nome NetBIOS primario do servidor Samba. Caso não seja ajustado, ele usará o hostname de sua maquina como valor padrão.
+
+    workgroup = [grupo de trabalho]
+
+Diz qual o nome do grupo de trabalho/dominio a que o servidor Samba pertencerá.
+
+    netbios aliases = [nomes_alternativos]
+
+Permite o uso de nomes alternativos ao servidor, separados por espaços.
+
+    server string = [identificação]
+
+Identificação enviada do servidor Samba para o ambiente de rede.
+
+    name resolve order = [ordem]
+
+Define a ordem de pesquisa para a resolução de nomes no servidor Samba. A ordem padrão é: lmhost host wins beast, que é a melhor para a resolução rápida e tenta gerar menos trafego broadcast possível.
+
+
+## Restrições de acesso/mapeamento de usuários
+
+    guest account = [conta]
+
+Define a conta local de usuário que será mapeada quando um usuário se conectar sem senha.
+
+    invalid users = [usuário]
+
+Define uma lista de usuários que não terão acesso aos recursos do servidor ou compartilhamento.
+
+    valid users = [usuário]
+
+Semelhante ao parâmetro invalid users, mas permite que somente os usuários especificados tenham acesso ao sistema.
+
+    username map = [arquivo]
+
+Especifica um arquivo que faz o mapeamento entre nomes fornecidos por clientes e nomes de contas Unix locais.
+
+
+## Níveis de autenticação
+
+    secutiry = [nível]
+
+É possível o Samba trabalhar com vários tipos diferentes de autenticação:
+
+  share – Usada principalmente quando apenas a senha é enviada por compartilhamento acessado para o servidor, é um mecanismo sem segurança. O nível de segurança share é recomendado para servidores em que todo o conteúdo deve ter acesso público.
+
+  user – Este é o padrão mais usado. O usuário precisa estar cadastrado na conta de usuários Linux para acessar compartilhamentos. A mesma conta de usuário/senha deverá ser usada no Windows para acessar seus recursos ou ser realizado um mapeamento de nomes de usuários.
+
+  domain – Neste nível, o acesso só será permitido quando a maquina for adicionada ao domínio. Neste nível de acesso, a conta de usuário será validada em um servidor PDC.
+
+  server – O servidor Samba tentará autenticar o usuário em outro servidor NT (ou Samba). No caso da autenticação falhar, será usado o nível de acesso user na base se usuários local.
+
+## Seção de Compartilhamento
+
+Esta seção é muito importante, pois documenta como disponibilizar compartilhamentos e impressoras com o servidor Samba e os parâmetros utilizados para realizar restrições dos mesmos. Esses parâmetros são desses compartilhamentos, mas nada impede que também sejam colocados na seção [global] do arquivo de configuração, principalmente quando isso é válido para diversos serviços.
+
+
+Descrição dos parâmetros
+
+  path = [valor]
+
+
+Indica o diretório que será compartilhado. As permissões de acesso são as mesmas definidas pelo comando chmod no Linux.
+
+
+  comment = [valor]
+
+
+Descrição do compartilhamento que será mostrada na janela de procura da rede.
+
+
+  browseable = [valor]
+
+
+Define se o compartilhamento será ou não exibido na janela de procura da rede. Mesmo não sendo exibido, o compartilhamento pode ser acessado.
+
+
+  guest account = [valor]
+
+
+Conta de usuário que será usada para fazer acesso ao compartilhamento sem senha (convidado) quando o parâmetro guest ok ou public for usado em um compartilhamento. Por padrão ele mapeia para o usuário nobody.
+
+
+  public = [valor]
+
+
+Permite aos usuários se conectar ao compartilhamento sem fornecer uma senha usando o usuário guest.
+
+
+  guest only = [valor]
+
+
+Permite somente conexões guest ao recurso. o UID do usuário é mapeado para guest, mesmo que forneça uma senha correta.
+
+
+  write list = [valor]
+
+
+Lista de usuários separados por espaços ou vírgula que poderão ler e gravar no compartilhamento. Caso o nome seja iniciado com @, o nome especificado será tratado como um grupo existente no Linux.
+
+
+  read list = [valor]
+
+
+Lista de usuários separados por vírgula ou espaço que poderão apenas ler o compartilhamento. Caso o nome seja iniciado com @, o nome especificado será tratado como um grupo existente no Linux.
+
+
+  user = [valor]
+
+
+Especifica um ou mais nomes de usuários ou grupos (caso o nome seja iniciado por @) para checagem de senha.
+
+
+  only user = [valor]
+
+
+Especifica se somente serão permitidas conexões vindas de usuários da diretiva user.
+
+
+  locking = [valor]
+
+
+Permite ao Samba fazer um lock real de arquivo ou apenas simular. Caso seja especificado como no, o arquivo não é bloqueado para o acesso exclusivo no servidor, mas uma resposta positiva de lock é retornada ao cliente. Se definido como yes um lock real é feito.
+
+
+  available = [valor]
+
+
+Faz o Samba ignorar o compartilhamento (como se tivesso retirado do servidor).
+
+
+  follow symlinks = [valor]
+
+
+Permite o uso de links simbólicos no compartilhamento. A desativação desta opção diminui um pouco a performance de acesso aos arquivos.
+
+
+  wide links = [valor]
+
+
+Permite apontar para links simbólicos para fora do compartilhamento exportado pelo Samba.
+
+
+  dont descend = [valor]
+
+
+Não mostra o conteúdo de diretórios especificados.
+
+
+  printable = [valor]
+
+
+Especifica se o compartilhamento é uma impressora se marcado como yes.
+
+
+  read only = [valor]
+
+
+Especifica se o compartilhamento é somente leitura (se marcado como yes) para todos os usuários.
+
+
+  create mask = [valor]
+
+
+Modo padrão para criação de arquivos no compartilhamento. O valor deve ser especificado em formato octal.
+
+
+  directory mask = [valor]
+
+
+O mesmo para o parâmetro create mask, mas para diretórios criados no compartilhamento.
+
+################################################################################################
+
+ Diz qual o nome do grupo de trabalho/domínio que a máquina samba pertencerá.
+ workgroup = casa
+ 
+ #Como a máquina Linux irá aparecer na rede Windows
+ netbios name = servidor (está linha pode ser adicionada a baixo do workgroup)
+ Caso não seja ajustado, ele usará o hostname de sua máquina como valor padrão.
+ 
+ ####### Authentication #######
+ 
+ #Modo de acesso aos arquivos do Linux
+ security = "share" ou "user" (caso exista, remova o ; que está no início desta linha)
+ #share = para NÃO exigir autenticação
+ #user = para exigir autenticação
+ ex: security = user
+
+ Explicação: 
+ [arquivos] - nome do compartilhamento
+ Path - localização da partilha, caminho da pasta, no Linux, que será compartilhada
+ public - todos os compartilhamentos poderão ser acessados por todos os usuários
+ browsable - Indica que a partilha está visível ou oculto na rede (yes para visível)
+ guest ok - permite que os utilizadores acedam à partilha sem a necessidade de introduzirem credenciais
+ writable - permitirá escrita
+ read only - somente leitura, se "no", então o utilizador tem privilégios de escrita
+ create mask - define as permissões para novos ficheiros criados
+ directory mask -define a mascara em que os diretórios serão criados
+
+

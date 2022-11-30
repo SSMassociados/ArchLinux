@@ -1,0 +1,176 @@
+10 OPERADORES DE ENCADEAMENTO ÚTEIS NO LINUX COM EXEMPLOS PRÁTICOS
+
+O encadeamento de comandos do Linux significa combinar vários comandos e fazê-los executar com base no comportamento do operador usado entre eles. O encadeamento de comandos no Linux é algo como escrever scripts de shell curtos no próprio shell e executá-los diretamente do terminal. O encadeamento permite automatizar o processo. Além disso, uma máquina desacompanhada pode funcionar de maneira muito sistemática com a ajuda de operadores de encadeamento.
+
+1. OPERADOR E COMERCIAL (&)
+
+A função de ' & ' é fazer com que o comando seja executado em segundo plano. Basta digitar o comando seguido de um espaço em branco e ' & '. Você pode executar mais de um comando em segundo plano, de uma só vez.
+
+Execute um comando em segundo plano:
+
+tecmint@localhost:~$ ping ­c5 www.tecmint.com &
+
+Execute dois comandos em segundo plano, simultaneamente:
+
+root@localhost:/home/tecmint# apt-get update & apt-get upgrade &
+
+2. OPERADOR DE PONTO E VÍRGULA (;)
+
+O operador ponto-e-vírgula possibilita a execução de vários comandos de uma só vez e a execução do comando ocorre de forma sequencial.
+
+root@localhost:/home/tecmint# apt-get update ; apt-get upgrade ; mkdir test
+
+A combinação de comandos acima executará primeiro a instrução de atualização , depois a instrução de atualização e, finalmente, criará um diretório de ' teste ' no diretório de trabalho atual.
+
+3. OPERADOR AND (&&)
+
+O operador AND ( && ) executaria o segundo comando apenas, se a execução do primeiro comando TIVER SUCESSO , ou seja, o status de saída do primeiro comando é 0 . Este comando é muito útil para verificar o status de execução do último comando.
+
+Por exemplo, eu quero visitar o site tecmint.com usando comandar ligações , no terminal, mas antes que eu preciso verificar se o host está vivo ou não .
+
+root@localhost:/home/tecmint# ping -c3 www.tecmint.com && links www.tecmint.com
+
+4. OPERADOR OR (||)
+
+O operador OR ( || ) é muito parecido com uma instrução ' else ' na programação. O operador acima permite que você execute o segundo comando apenas se a execução do primeiro comando falhar, ou seja, o status de saída do primeiro comando é ' 1 '.
+
+Por exemplo, eu quero executar ' apt-get update ' de uma conta não root e se o primeiro comando falhar, o segundo comando 'links www.tecmint.com ' será executado.
+
+tecmint@localhost:~$ apt-get update || links tecmint.com
+
+No comando acima, uma vez que o usuário não tinha permissão para atualizar o sistema, isso significa que o status de saída do primeiro comando é '1' e, portanto, o último comando ' links tecmint.com ' é executado.
+
+E se o primeiro comando for executado com sucesso, com um status de saída ' 0 '? Obviamente! O segundo comando não será executado.
+
+tecmint@localhost:~$ mkdir test || links tecmint.com
+
+Aqui, o usuário cria uma pasta ' teste ' em seu diretório inicial, para a qual o usuário é permitido. O comando foi executado com sucesso dando um status de saída ' 0 ' e, portanto, a última parte do comando não foi executada.
+
+5. NÃO OPERADOR (!)
+
+O operador NOT ( ! ) É muito parecido com uma instrução ' exceto '. Este comando executará todos, exceto a condição fornecida. Para entender isso, crie um diretório ' tecmint ' em seu diretório inicial e ' cd ' nele.
+
+tecmint@localhost:~$ mkdir tecmint 
+tecmint@localhost:~$ cd tecmint
+
+A seguir, crie vários tipos de arquivos na pasta ' tecmint '.
+
+tecmint@localhost:~/tecmint$ touch a.doc b.doc a.pdf b.pdf a.xml b.xml a.html b.html
+
+Veja que criamos todos os novos arquivos dentro da pasta ' tecmint '.
+
+tecmint@localhost:~/tecmint$ ls 
+
+a.doc  a.html  a.pdf  a.xml  b.doc  b.html  b.pdf  b.xml
+
+Agora exclua todos os arquivos, exceto o arquivo ' html ' de uma vez, de forma inteligente.
+
+tecmint@localhost:~/tecmint$ rm -r !(*.html)
+
+Só para verificar, última execução. Liste todos os arquivos disponíveis usando o comando ls .
+
+tecmint@localhost:~/tecmint$ ls 
+
+a.html  b.html
+
+6. OPERADOR AND - OR (&& - ||)
+
+O operador acima é, na verdade, uma combinação dos operadores ' E ' e ' OU '. É muito parecido com uma declaração ' if-else '.
+
+Por exemplo, vamos fazer ping em tecmint.com , se sucesso echo ' Verificado ' senão echo ' Host Down '.
+
+tecmint@localhost:~/tecmint$ ping -c3 www.tecmint.com && echo "Verified" || echo "Host Down"
+
+Saída de amostra
+
+PING www.tecmint.com (212.71.234.61) 56(84) bytes of data. 
+64 bytes from www.tecmint.com (212.71.234.61): icmp_req=1 ttl=55 time=216 ms 
+64 bytes from www.tecmint.com (212.71.234.61): icmp_req=2 ttl=55 time=224 ms 
+64 bytes from www.tecmint.com (212.71.234.61): icmp_req=3 ttl=55 time=226 ms 
+
+--- www.tecmint.com ping statistics --- 
+3 packets transmitted, 3 received, 0% packet loss, time 2001ms 
+rtt min/avg/max/mdev = 216.960/222.789/226.423/4.199 ms 
+Verified
+
+Agora, desconecte sua conexão com a Internet e tente o mesmo comando novamente.
+
+tecmint@localhost:~/tecmint$ ping -c3 www.tecmint.com && echo "verified" || echo "Host Down"
+
+Saída de amostra
+
+ping: unknown host www.tecmint.com 
+Host Down
+ 
+7. OPERADOR DE PIPE (|)
+
+Este operador PIPE é muito útil quando a saída do primeiro comando atua como uma entrada para o segundo comando. Por exemplo, canalize a saída de ' ls -l ' para ' less ' e veja a saída do comando.
+
+tecmint@localhost:~$ ls -l | less
+
+8. OPERADOR DE COMBINAÇÃO DE COMANDO {}
+
+Combine dois ou mais comandos, o segundo comando depende da execução do primeiro comando.
+
+Por exemplo, verifique se um diretório ' bin ' está disponível ou não e produza a saída correspondente.
+
+tecmint@localhost:~$ [ -d bin ] || { echo Directory does not exist, creating directory now.; mkdir bin; } && echo Directory exists.
+
+9. OPERADOR DE PRECEDÊNCIA ()
+
+O Operador possibilita a execução de comandos em ordem de precedência.
+
+Command_x1 &&Command_x2 || Command_x3 && Command_x4.
+
+No pseudo comando acima, e se Command_x1 falhar? Nenhum dos Command_x2 , Command_x3 , Command_x4 seria executado, para isso usamos o operador de precedência , como:
+
+(Command_x1 &&Command_x2) || (Command_x3 && Command_x4)
+
+No pseudo comando acima, se Command_x1 falhar, Command_x2 também falhará, mas ainda Command_x3 e Command_x4 executado depende do status de saída de Command_x3 .
+
+10. OPERADOR DE CONCATENAÇÃO (\)
+
+O operador de concatenação ( \ ) como o nome especifica, é usado para concatenar comandos grandes em várias linhas no shell. Por exemplo, o comando abaixo abrirá o arquivo de texto test (1) .txt .
+
+tecmint@localhost:~/Downloads$ nano test\(1\).txt
+
+É tudo por agora. Em breve vou escrever outro artigo interessante. Até lá Fique ligado, saudável e conectado à Tecmint . Não se esqueça de dar seu feedback valioso em nossa seção de comentários.
+
+💢️ OPERADORES DE REDIRECIONAMENTO
+
+Os operadores de redirecionamento são totalmente essenciais nos sistemas baseados em Unix, inclusive o Linux. Eles permitem bastantes recursos, como o redirecionamento da saída de um programa para um arquivo, enviar a saída de um programa para entrada de outro e muito mais!
+
+Os operadores são: >, >>, <, 2> e | (o mais importante!).
+
+O OPERADOR >
+
+O operador > é usado para sobrescrever um arquivo com a saída do comando
+
+Algumas características:
+
+O arquivo será sobrescrito! Cuidado para não fazer nenhuma m...
+Caso não se tenha permissão para escrever no arquivo, vai dar erro (o que tu esperava?).
+Caso o arquivo não exista, ele será criado.
+
+O OPERADOR >>
+
+Seria a mesma coisa que o >, mas com uma diferença: ele não sobrescreve o arquivo. Neste caso você poderá escrever mais.
+As características são a mesmas, com a diferença que o arquivo não será sobrescrito.
+
+O OPERADOR <
+
+A função deste operador é o contrário do >: ao invés de mandar a saída do comando para o arquivo, ele manda o arquivo como entrada do comando.
+
+Seria o mesmo que você digitar tudo que tem no arquivo como entrada, mas como o pessoal do Unix tem bom senso :), eles automatizaram isso. O ^D também é automatizado.
+
+Este operador pode facilmente ser substituído pelo pipe (|), junto com o comando 'cat'.
+
+O OPERADOR 2>
+
+Quando vai se testar o operador >, você pode facilmente verificar que ele não redireciona mensagens de erro.
+
+O operador 2> tem esta função: redirecionar somente as mensagens de erro para um arquivo.
+
+O PIPE
+
+Este é, com certeza, o mais importante de todos os operadores de redirecionamento.

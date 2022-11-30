@@ -1,0 +1,19 @@
+Para desabilitar os aplicativos Snap em sua estação de trabalho, você deve primeiro listar todos os serviços snap e os soquetes PID (Identificador de Processo) incluídos em execução.
+
+systemctl list-unit-files | grep snap
+
+Depois de listar tudo isso, você deve desabilitar todos os serviços snap conhecidos. Abaixo está apenas um resumo da execução de serviços snap na minha estação de trabalho (no Fedora Linux).
+
+sudo systemctl disable var-lib-snapd-snap-core-11606.mount                   
+sudo systemctl disable ar-lib-snapd-snap-core18-2128.mount                  
+sudo systemctl disable var-lib-snapd-snap-gtk2\x2dcommon\x2dthemes-13.mount  
+sudo systemctl disable var-lib-snapd-snap-gtk\x2dcommon\x2dthemes-1515.mount 
+sudo systemctl disable snapd.apparmor.service                                
+sudo systemctl disable snapd.failure.service                                 
+sudo systemctl disable snapd.seeded.service                                  
+sudo systemctl disable snapd.service                                         
+sudo systemctl disable snapd.socket                                          
+
+Depois de concluir as etapas acima, você deve reiniciar sua estação de trabalho para uma inicialização muito mais limpa.
+
+sudo rm -rf /var/cache/snapd/

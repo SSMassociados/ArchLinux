@@ -1,0 +1,69 @@
+#TOUCHPAD #LIBINPUT
+
+SELECIONANDO LIBINPUT
+
+Quando vários drivers estão disponíveis no sistema, o Xorg deve ser instruído a usar libinput antes de tentar usar outros drivers de entrada. Isso pode ser feito simplesmente fazendo um link simbólico do arquivo 40-libinput.conf no diretório /etc/X11/xorg.conf.d/ :
+root # ln -s /usr/share/X11/xorg.conf.d/40-libinput.conf /etc/X11/xorg.conf.d/
+
+### Se o desejo for de editar o 40-libinput.conf , é melhor copiar o arquivo para o diretório de configuração:
+root# cp /usr/share/X11/xorg.conf.d/40-libinput.conf /etc/X11/xorg.conf.d/
+
+O Xorg dá prioridade aos arquivos no diretório /etc/X11/xorg.conf.d/ .
+
+(Re)inicie o ambiente gráfico para que as alterações tenham efeito.
+
+TOQUE PARA CLICAR NO TOUCHPAD
+
+Muitos usuários desejarão o comportamento "tocar para clicar" nativo para laptops com touchpads modernos. Adicione as seguintes linhas de opção à seção de configuração libinput do Xorg:
+
+Adicionando toque para clicar /etc/X11/xorg.conf.d/40-libinput.conf
+                
+Seção  "InputClass" 
+     Identificador  "libinput touchpad catchall" 
+     MatchIsTouchpad  "on" 
+     MatchDevicePath  "/dev/input/event*" 
+     Opção  "Tapping" "True" 
+     Opção  "TappingDrag" "True" 
+     Driver  "libinput" 
+EndSection
+        
+ROLAGEM NATURAL DO TOUCHPAD
+
+A rolagem natural (deslizar para cima no touchpad - o conteúdo sobe e a barra de rolagem desce) pode ser obtida adicionando as seguintes opções ao arquivo /etc/X11/xorg.conf.d/40-libinput.conf :
+Adicionando rolagem natural /etc/X11/xorg.conf.d/40-libinput.conf
+
+Seção  "InputClass" 
+     Identificador  "libinput touchpad catchall" 
+     MatchIsTouchpad  "on" 
+     MatchDevicePath  "/dev/input/event*" 
+     Opção  "NaturalScrolling" "True" 
+     Driver  "libinput" 
+EndSection
+
+Obviamente, várias opções podem ser combinadas sem a necessidade de criar uma nova seção a cada vez.
+
+ACELERAÇÃO DO PONTEIRO
+
+Uma redução permanente da aceleração do ponteiro:
+Configurando a aceleração para 90% /etc/X11/xorg.conf.d/40-libinput.conf
+       
+Seção  "InputClass" 
+        Identificador  "libinput pointer catchall" 
+        MatchIsPointer  "on" 
+        Driver  "libinput" 
+        Opção  "TransformationMatrix" "0.90 0 0 0 0.90 0 0 0 1" 
+EndSection
+        
+Também é possível desabilitar completamente a aceleração:
+Desativando a aceleração no touchpad /etc/X11/xorg.conf.d/50-touchpad.conf
+     
+Seção  "InputClass" 
+        Identificador  "Thinkpad TouchPad" 
+        # Veja o resultado de 'xinput list' 
+        MatchProduct  "SynPS/2 Synaptics TouchPad" 
+        Driver  "libinput" 
+        Opção  "AccelProfile" "flat" 
+EndSection
+
+
+          

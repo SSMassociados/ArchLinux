@@ -1,0 +1,120 @@
+
+https://www.youtube.com/watch?v=vukH7ENTIyQ
+
+
+### Arch Linux - Instalação Fácil Via Script (Dual Boot W10)
+
+https://www.youtube.com/watch?v=v-qDRalPAVw
+
+Pré instalação
+
+loadkeys br-abnt2
+
+wifi-menu
+
+dhcpcd
+
+wget https://github.com/helmuthdu/aui/tarb... -O - | tar xz
+
+
+Pós Instalacao
+
+
+dhcpcd
+
+---
+
+(Em Dual Boot)
+
+grub-mkconfig -o /boot/grub/grub.cfg
+
+---
+
+useradd -m bn
+passwd bn
+
+nano /etc/sudoers
+
+sudo pacman -S xdg-user-dirs
+
+sudo pacman -S bash-completion
+
+xdg-user-dirs-update
+
+-
+
+pacman -S xorg-server xorg-apps xf86-input-mouse xf86-input-keyboard
+
+pacman -S xf86-input-synaptics
+
+pacman -S xorg-xinit xorg-twm xterm xorg-xclock
+
+lspci | grep -e VGA -e 3D
+--------
+
+ATI/AMD (radeon)
+
+# pacman -S xf86-video-amdgpu
+
+INTEL
+
+# pacman -S xf86-video-intel
+
+NVIDIA
+
+# pacman -S xf86-video-nouveau
+
+GENÉRICOS
+
+# pacman -S xf86-video-fbdev
+# pacman -S xf86-video-vesa
+
+startx (Ctrl D para sair)
+
+pacman -S plasma konsole networkmanager network-manager-applet haveged
+
+systemctl enable sddm NetworkManager haveged
+
+reboot
+
+
+su
+localectl set-x11-keymap br 
+
+
+sudo pacman -S pulseaudio pulseaudio-alsa pavucontrol alsa-firmware alsa-utils a52dec faac faad2 flac jasper lame libdca libdv libmad libmpeg2 libtheora libvorbis libxv wavpack x264 xvidcore gstreamer gst-plugins-base gst-plugins-base-libs gst-plugins-good gst-plugins-bad gst-plugins-ugly gst-libav gvfs gvfs-afc gvfs-gphoto2 gvfs-mtp gvfs-nfs gvfs-smb git dolphin spectacle screenfetch packagekit
+
+Bluetooth
+
+sudo pacman -S bluez blueman bluez-utils
+sudo modprobe btusb
+sudo systemctl enable bluetooth
+sudo systemctl start bluetooth
+
+Impressão
+
+sudo pacman -S cups gtk3-print-backends system-config-printer
+sudo systemctl enable org.cups.cupsd.service
+sudo systemctl start org.cups.cupsd.service
+
+sudo pacman -S flashplugin unzip unrar p7zip mlocate  sshfs
+
+sudo pacman -S net-tools dnsutils nmap
+
+git clone https://aur.archlinux.org/yay.git && cd yay && makepkg -si
+
+yay -S pamac-aur
+
+Falta de Firmware
+
+git clone https://aur.archlinux.org/aic94xx-fir... && cd aic94xx-firmware/ && makepkg -si
+
+git clone https://aur.archlinux.org/wd719x-firm... && cd wd719x-firmware/ && makepkg -si
+
+Desativar Carteira do KDE
+
+
+nano ~/.config/kwalletrc
+
+Enabled=false
+

@@ -1,0 +1,19 @@
+# Static information about the filesystems.
+# See fstab(5) for details.
+
+# <file system> <dir> <type> <options> <dump> <pass>
+# /dev/nvme0n1p6 LABEL=/_Arch
+UUID=0d71b93b-3034-4962-ad8b-2a0946521064	/         	ext4      	rw,relatime	0 1
+
+# /dev/nvme0n1p8 LABEL=HOME
+UUID=514f823d-4106-454d-9542-4292de315a27	/home     	ext4      	rw,relatime	0 2
+
+# /dev/nvme0n1p1 LABEL=UEFI
+UUID=1A8C-E8FB      	/boot     	vfat      	rw,relatime,fmask=0022,dmask=0022,codepage=437,iocharset=ascii,shortname=mixed,utf8,errors=remount-ro	0 2
+
+# /dev/nvme0n1p4
+UUID=F03E11663E11275E	/Windows10	ntfs      	rw,nosuid,nodev,user_id=0,group_id=0,allow_other,blksize=4096	0 0
+
+# /dev/sda1
+UUID=4A8BE7EE610E33CA	/Seagate_2tb	ntfs      	rw,nosuid,nodev,user_id=0,group_id=0,allow_other,blksize=4096	0 0
+

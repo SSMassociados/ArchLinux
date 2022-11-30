@@ -1,0 +1,47 @@
+﻿Como Montar Partição sem Autenticação no Linux
+
+Abra o arquivo /usr/share/polkit-1/actions/org.freedesktop.UDisks2.policy
+
+sudo gedit /usr/share/polkit-1/actions/org.freedesktop.UDisks2.policy 
+
+Linha 171, 172 e 173
+
+E no trecho(<action id="org.freedesktop.udisks2.filesystem-mount-system"> , na tag defaults) similar ao abaixo, troque as informações: auth_admin por yes
+
+<action id="org.freedesktop.udisks2.filesystem-mount-system">
+    <description>Mount a filesystem on a system device</description>
+    <description xml:lang="zh_TW">在系統裝置掛載檔案系統</description>
+    <description xml:lang="zh_CN">在系统设备上挂载文件系统</description>
+    <description xml:lang="uk">Змонтувати файлову систему на пристрої зберігання системи</description>
+    <description xml:lang="tr">Bir sistem aygıtı üzerinde bir dosya sistemi bağla</description>
+    ....
+    <defaults>
+    <allow_any>auth_admin</allow_any>
+    <allow_inactive>auth_admin</allow_inactive>
+    <allow_active>auth_admin_keep</allow_active>
+    </defaults>
+</action>
+
+Deixando assim:
+
+<action id="org.freedesktop.udisks2.filesystem-mount-system">
+    <description>Mount a filesystem on a system device</description>
+    <description xml:lang="zh_TW">在系統裝置掛載檔案系統</description>
+    <description xml:lang="zh_CN">在系统设备上挂载文件系统</description>
+    <description xml:lang="uk">Змонтувати файлову систему на пристрої зберігання системи</description>
+    <description xml:lang="tr">Bir sistem aygıtı üzerinde bir dosya sistemi bağla</description>
+    ....
+    <defaults>
+    <allow_any>yes</allow_any>
+    <allow_inactive>yes</allow_inactive>
+    <allow_active>yes</allow_active>
+    </defaults>
+</action>
+
+Depois nem precisa reiniciar nada, basta tentar montar de agora em diante
+
+Se não conseguir, tente alterar também no arquivo que tem a informação Udisk ou udisk2
+
+Sobre o Polkit
+
+O Polkit é um componente para controlar privilégios em todo o sistema em sistemas operacionais semelhantes ao Unix. Ele fornece uma maneira organizada para processos não privilegiados se comunicarem com os privilegiados. O Polkit permite um nível de controle da política do sistema centralizado.

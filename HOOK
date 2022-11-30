@@ -1,0 +1,56 @@
+## ALPM-HOOKS
+
+alpm-hooks - formato de arquivo de gancho alpm
+SINOPSE DE SINOP
+
+[Trigger] (Required, Repeatable)
+Operation = Install|Upgrade|Remove (Required, Repeatable)
+Type = Path|Package (Required)
+Target = <Path|PkgName> (Required, Repeatable)
+
+[Action] (Required)
+Description = ... (Optional)
+When = PreTransaction|PostTransaction (Required)
+Exec = <Command> (Required)
+Depends = <PkgName> (Optional)
+AbortOnFail (Optional, PreTransaction only)
+NeedsTargets (Optional)
+
+
+LIBALPM fornece a capacidade de especificar ganchos para executar antes ou depois transações baseadas nos pacotes e/ou arquivos que estão sendo modificados. Os ganchos consistem de uma única seção [Ação] descrevendo a ação a ser executada e uma ou mais [Trigger] seção descrevendo quais transações devem ser executadas.
+
+Os ganchos são lidos a partir de arquivos localizados no diretório do gancho do sistema /usr/share/libalpm/hooks, e diretórios personalizados adicionais especificados em pacman.conf(5) (O PADRÃO É /etc/pacman.d/hooks). Os nomes dos arquivos são obrigados a ter o sufixo ".hook". Os ganchos são executados em ordem alfabética do nome do arquivo, onde a ordem ignora o sufixo.
+
+TRIGGERS
+Os ganchos devem conter pelo menos uma seção [Trigger] que determina qual As transações farão com que o gancho seja executado. Se várias seções de gatilho forem Definido o gancho será executado se a transação corresponder a qualquer um dos gatilhos.
+
+Operation = Instalar|Upgrade|Remover
+    Selecione o tipo de operação contra os alvos. Pode ser especificado Várias vezes. As instalações são consideradas uma atualização se o pacote ou O arquivo já está presente no sistema, independentemente de o novo pacote A versão é realmente maior do que a versão atualmente instalada. Para o caminho Atributos, isso é verdade mesmo que o arquivo mude de propriedade de um pacote Para outro. Exigido o que era.
+    
+Type = Caminho|Pacote
+    Selecione se os destinos são combinados contra pacotes de transações ou arquivos. Veja CAVEATS para notas especiais sobre os gatilhos do caminho. O arquivo é um descadated alias para Path e será removido em uma versão futura. Exigido o que era.
+
+Target = path|package
+    O caminho ou nome do pacote para corresponder à transação ativa. Os caminhos referem-se aos arquivos no arquivo do pacote; a raiz de instalação Não deve ser incluído no caminho. Padrões de glob estilo Shell são É permitido. É possível inverter as partidas, preparando um alvo com um - Marca de exclamação. Pode ser especificado várias vezes. Exigido o que era.
+
+ACTIONS (ACCSSOA)
+
+Description = … 
+    Uma descrição opcional que descreve a ação que está sendo tomada pelo gancho para uso na saída frontal.
+    
+Exec = <command> (em inglês)
+    - Comando para correr. Argumentos de comando são divididos em espaços em branco. Valores contendo espaço em branco deve ser incluído naspas. Exigido o que era.
+
+When = Pré-Transação|pós-transação
+    Quando correr o gancho. Exigido o que era.
+    
+Depends = <package>
+    Pacotes que devem ser instalados para que o gancho seja executado. Pode ser especificado Várias vezes.
+    
+AbortOnFail
+    Faz com que a transação seja abortada se o gancho sair de zero. Apenas Aplica-se a ganchos de pré-transação.
+    
+NeedsTargets
+    Causa a lista de alvos de disparo combinados a serem passados para o gancho de corrida em stdin.
+
+

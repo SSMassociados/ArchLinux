@@ -1,0 +1,321 @@
+ A LISTA DE PACOTES QUE INSTALEI EM MEU SISTEMA
+
+Cria uma lista de pacotes que instalei dos repositórios oficiais.
+pacman -Qqen > pkglist.txt 
+
+Cria uma lista de pacotes que instalei do AUR.
+pacman -Qqem > pkglist_aur.txt 
+
+Combina as duas listas acima em um único arquivo.
+cat pkglist.txt pkglist_aur.txt > pkglist_full.txt 
+
+Esses comandos são bastante simples, mas podem ser irritantes de digitar constantemente. Recomendo aos usuários que criem um alias que emita esses comandos como uma sequência.
+
+Seu .zshrc faz o truque:
+
+alias packup='pacman -Qqen > pkglist.txt && pacman -Qqem > pkglist_aur.txt && cat pkglist.txt pkglist_aur.txt > pkglist_full.txt'
+
+
+LISTA DE PACOTES INSTALADOS
+
+Manter uma lista de todos os pacotes instalados explicitamente pode ser útil para, por exemplo, servidor de backup de um sistema ou acelerar a instalação em um novo sistema:
+
+pacman -Qqe > pkglist.txt
+
+INSTALAR PACOTES DE UMA LISTA
+
+Para instalar pacotes de uma lista salva anteriormente de pacotes, sem reinstalar pacotes já instalados(--needed) que já estão atualizados, execute:
+
+pacman -S --needed - < pkglist.txt
+
+Para manter uma lista atualizada de pacotes explicitamente instalados (p. ex., em combinação com um /etc/ versionado), você pode configurar um hook. Exemplo:
+
+sudo nano /etc/pacman.d/hooks/backup_list_apps.hook 
+
+[Trigger]
+Operation = Install
+Operation = Remove
+Type = Package
+Target = *
+
+[Action]
+When = PostTransaction
+Exec = /bin/sh -c '/usr/bin/pacman -Qqe > /etc/pkglist.txt'
+
+
+REMOVENDO PACOTES NÃO USADOS (ÓRFÃOS)
+
+Para remover recursivamente órfãos e seus arquivos de configuração: 
+
+pacman -Qtdq | pacman -Rns -
+pacman -Rns $(pacman -Qtdq)
+
+DESINSTALANDO PROGRAMAS
+sudo pacman -Rsn nome_pacote
+
+Quando você instala e remove pacotes no Arch Linux, alguns pacotes órfãos não usados ​​podem permanecer em seu sistema. Vc esta querendo remover os pacotes órfãos ?
+
+pacman -Qtd  //lista os pacotes órfãos
+
+Verifica a lista, caso queria deletar toda a lista de uma vez.
+
+pacman -Rsn $(pacman - Qdtq)   //remove toda a lista de pacotes órfãos, ou seja, aqueles que ja não são dependentes de nenhum outro pacote.
+
+pacman -Sc    //limpa os pacotes antigos do cache que não estão instalado
+
+pacman -Scc   //limpa todo o cache, sejam eles instalados ou desinstalados
+
+Tenha cuidado ao usar este comando. Não há como recuperar os pacotes armazenados em cache depois de apagados.
+
+KEEPINSTALLED & KEEPCURRENT
+
+🚀️ Se definida como KeepInstalled (o padrão), a operação -Sc limpará os pacotes que não estão mais instalados (não presentes na base de dados local).
+
+CleanMethod = KeepInstalled  
+
+🚀️ Se definida como KeepCurrent, -Sc limpa pacotes desatualizados (não presentes em nenhuma base de dados de sincronização).
+
+CleanMethod = KeepCurrent
+
+🚀️ Se os dois valores forem especificados, os pacotes serão limpos apenas se não estiverem instalados localmente e não estiverem presentes em nenhuma base de dados de sincronização conhecida.
+
+CleanMethod = KeepInstalled &| KeepCurrent
+
+ === > LIMPE O CACHE DO PACOTE NO ARCH LINUX USANDO PACCACHE
+ 
+sudo pacman -S pacman-contrib
+
+Para ver as opções disponíveis, consulte o menu de ajuda de paccache.
+
+paccache -h
+
+1. Primeiro, verifique primeiro quantos pacotes em cache estão disponíveis na minha pasta de cache.
+
+sudo ls /var/cache/pacman/pkg/ | wc -l
+
+2. Verificar o espaço total em disco usado pela pasta de cache
+
+du -sh /var/cache/pacman/pkg/
+
+3. Para limpar todos os pacotes, exceto as 3 versões mais recentes, execute o seguinte comando:
+
+sudo paccache -r
+
+4. Ainda deseja remover mais pacotes? Claro que você pode! O Paccache permite que você decida quantas versões recentes deseja manter.
+
+Por exemplo, execute o seguinte comando se quiser manter apenas uma versão mais recente:
+
+$ sudo paccache -rk1
+
+5. Para remover todas as versões em cache de pacotes desinstalados, execute novamente o paccache com o usinalizador:
+
+$ sudo paccache -ruk0
+
+Onde, uflag indica os pacotes desinstalados.
+
+
+ === > COMO LIMPAR O ARCH LINUX
+
+Cada sistema fica confuso mais cedo ou mais tarde e o Arch Linux não é a exceção. Portanto, neste artigo, você aprenderá como limpar seu sistema Arch Linux.
+
+INTRODUÇÃO
+
+Embora o Arch Linux ocupe pouco espaço em disco logo após a instalação, com o passar do tempo ele cresce bastante. Portanto, se você não tem mais espaço livre em seu computador ou apenas gostaria de manter seu sistema Arch Linux limpo, este post é tudo que você precisa.
+
+NOTE que gostaria de avisá-lo que você pode danificar seu sistema se cometer um erro durante esses procedimentos. Portanto, faça backup de todos os seus arquivos antes de fazer qualquer coisa no sistema.
+
+
+PASSOS PARA LIMPAR O ARCH LINUX
+
+1. Limpe o cache do pacote
+
+Pacman, um gerenciador de pacotes do Arch Linux, armazena todos os pacotes baixados /var/cache/pacman/pkg/e não remove as versões antigas ou desinstaladas automaticamente. Você pode pensar que isso é um erro, mas isso é feito deliberadamente. Isso permite fazer o downgrade de um pacote sem a necessidade de recuperar a versão anterior por meio do Arch Linux Archive. Ou, se desinstalar um programa, você pode reinstalá-lo facilmente sem um novo download. Se você tiver uma conexão lenta com a Internet, isso pode ser útil. Por exemplo, você pode simplesmente instalar um pacote deste diretório usando o comando abaixo.
+
+sudo pacman -U /var/cache/pacman/pkg/packagename
+
+No entanto, essa /var/cache/pacman/pkg/ pode aumentar indefinidamente de tamanho.
+
+Portanto, você precisa limpá-lo de vez em quando. Existem duas maneiras de fazer isso: manualmente e automaticamente .
+
+🚀️ Limpando o cache manualmente
+
+Você pode limpar o cache manualmente. Por exemplo, normalmente movo esses arquivos para meu antigo disco rígido, que uso apenas para armazenar dados. Dessa forma, sempre posso acessar esses arquivos, mas eles não ocupam espaço valioso no meu sistema.
+
+No entanto, se você não tiver espaço extra para armazenar esses pacotes, poderá removê-los sem fazer backup. Uma opção é remover pacotes em cache que não estão instalados atualmente:
+
+sudo pacman -Sc
+
+A outra opção é remover todos os pacotes do cache, incluindo aqueles que estão instalados:
+
+sudo pacman -Scc
+
+E se acontecer de você precisar de alguns desses pacotes depois de removê-los, você pode ir para Arch Package Archive e baixá-los manualmente. Esta não é uma solução ideal se você precisar baixar muitos pacotes, porque baixá-los manualmente levará algum tempo, mas ainda é possível.
+
+🚀️ Limpando o cache automaticamente
+
+ Outra forma de limpar o /var/cache/pacman/pkg/  é usar um script que exclui automaticamente todas as versões em cache de pacotes instalados e desinstalados, exceto as 3 versões mais recentes. O script é chamado paccache. Você pode instalá-lo com o pacman-contrib
+
+sudo pacman -S pacman-contrib
+
+Para ver as opções disponíveis, consulte o menu de ajuda de paccache.
+
+paccache -h
+
+Por exemplo, você pode executá-lo no modo seco para ver quantos pacotes serão removidos usando a -dopção. Em seguida, você pode executar uma limpeza real usando a opção -r.
+
+EXECUTAR PACCACHE MENSALMENTE
+
+Uma maneira muito útil de usar esse script é executá-lo automaticamente uma vez por mês usando o cronômetro do systemd . Basicamente, você precisa criar o arquivo paccache.timerem /etc/systemd/system/, que será acionado /usr/lib/systemd/system/paccache.service.
+
+Então, você cria um paccache.timer arquivo com o nano:
+
+sudo nano /etc/systemd/system/paccache.timer
+
+Em seguida, para executar este script mensalmente, cole o seguinte conteúdo neste arquivo:
+
+[Unit]
+Description=Clean-up old pacman pkg
+
+[Timer]
+OnCalendar=monthly
+Persistent=true
+
+[Install]
+WantedBy=multi-user.target
+Depois disso, inicie o serviço systemd:
+
+sudo systemctl enable paccache.timer
+sudo systemctl start paccache.timer
+
+Finalmente, você pode verificar o status do serviço.
+
+sudo systemctl status paccache.timer
+
+Então, você deve ver a mensagem de que ele está ativo. Agora, paccache será executado todo mês e limpará o cache de seus pacotes antigos e desinstalados.
+
+🚀️ CORRER PACCACHE ATRÁS PACMAN
+
+Como alternativa a este cronômetro, você também pode correr paccachesempre depois de correr pacman. Então, você precisa criar um Gancho para isso. 
+
+Basta criar um arquivo /etc/pacman.d/hooks/clean_package_cache.hook.
+
+Para fazer isso, crie um arquivo /etc/pacman.d/hooks/clean_package_cache.hook :
+
+sudo mkdir /etc/pacman.d/hooks
+
+sudo nano /etc/pacman.d/hooks/clean_package_cache.hook
+
+Depois disso, adicione esse conteúdo ao arquivo.
+
+[Trigger]
+Operation = Upgrade
+Operation = Install
+Operation = Remove
+Type = Package
+Target = *
+
+[Action]
+Description = Cleaning pacman cache with paccache …
+When = PostTransaction
+Exec = /usr/bin/paccache -r
+
+Agora, se eu remover um pacote usando pacman, paccache também será executado.
+
+
+REMOVA OS PACOTES NÃO USADOS ​​(ÓRFÃOS)
+
+Quando você instala e remove pacotes no Arch Linux, alguns pacotes órfãos não usados ​​podem permanecer em seu sistema. Para encontrá-los, você precisa executar este comando:
+
+sudo pacman -Qtdq
+
+Como você pode ver, executando o comando acima, você poderá saber quais pacotes são órfãos. Para removê-los, você precisa modificar o comando com a ação remove:
+
+sudo pacman -Rns $(pacman -Qtdq)
+
+Agora, você sabe como limpar os arquivos de sistema do Arch Linux removendo o cache do pacote e removendo os pacotes órfãos. No entanto, ainda há mais coisas a serem feitas em sua pasta de início.
+
+LIMPE O CACHE EM SEU DIRETÓRIO /HOME
+
+Nesta etapa, vou mostrar como limpar o Arch Linux removendo os arquivos de cache em sua /home/userpasta.
+
+Conforme usamos nosso sistema, o cache vai encher e ocupar muito espaço. Portanto, a primeira coisa que você provavelmente deseja fazer é limpar o cache no diretório do usuário. Se quiser verificar o tamanho da pasta de cache, você pode fazer isso com este comando:
+
+sudo du -sh ~/.cache/
+
+Para limpá-lo, você precisa remover todos os arquivos dentro dele:
+
+rm -rf ~/.cache/*
+
+REMOVA OS ARQUIVOS DE CONFIGURAÇÃO ANTIGOS
+
+Os arquivos de configuração de diferentes programas são armazenados em ~/.config/. Você pode acessá-lo a partir do seu gerenciador de arquivos e verificar se há algum arquivo de configuração remanescente dos programas que você desinstalou. Basta selecionar essas pastas e excluí-las. Mas antes de remover qualquer arquivo, gostaria de lembrar que é melhor fazer um backup de todos os seus arquivos antes de remover qualquer coisa.
+
+A pasta .config é onde os arquivos de configuração estão
+Os arquivos de configuração em ~/.config
+
+Alguns arquivos antigos também podem estar armazenados ~/.local/share/. Verifique também e exclua alguns arquivos e pastas, se necessário.
+
+REMOVA DUPLICATAS, ARQUIVOS VAZIOS, DIRETÓRIOS VAZIOS E LINKS SIMBÓLICOS QUEBRADOS
+VOCÊ PODE FAZER AINDA MAIS LIMPEZA REMOVENDO ARQUIVOS E DIRETÓRIOS DUPLICADOS E VAZIOS.
+
+Para manter alguma ordem em seu sistema, eu também recomendo remover links simbólicos quebrados, ei links que levam a arquivos ou pastas inexistentes. Eles não ocupam muito espaço, mas desorganizam o seu sistema. Para remover essas coisas, você pode usar o programa rmlint.
+
+Instale-o:
+
+sudo pacman -S rmlint
+
+Se você marcar todas as suas opções com --help, verá que são muitas. Eu recomendo explorá-los.
+
+No entanto, usar este aplicativo é bastante simples, você pode executá-lo especificando o diretório no qual deseja verificar se há arquivos duplicados. Por exemplo:
+
+rmlint /home/alu
+
+Este programa listará tudo o que encontrar e criará um script de shell para remover esse lint. O script pode ser encontrado na pasta inicial. Abra-o usando um editor de texto, role para baixo e verifique quais arquivos ele removerá.
+
+Você pode remover alguns desses arquivos manualmente ou, se concordar com a ação de remoção sugerida, pode voltar ao terminal e executar este script. Novamente, certifique-se de fazer um backup de todos os arquivos antes de executar este script. Esta ação será irreversível.
+
+sh -c rmlint.sh
+
+Agora, seu sistema está mais limpo. Mas não é o fim, ainda há algumas coisas que você pode fazer para limpá-lo ainda mais.
+
+ENCONTRE OS MAIORES ARQUIVOS E DIRETÓRIOS
+
+Você pode verificar quais são os maiores arquivos em seu sistema e talvez não precise deles. Para realizar essa tarefa, você pode usar algumas ferramentas de linha de comando ou programas gráficos. Para a ferramenta de linha de comando , eu uso ncdu.
+
+Para instalá-lo, execute este comando:
+
+sudo pacman -S ncdu
+
+Procure os maiores diretórios e, em seguida, vá dentro desses diretórios e encontre os maiores arquivos e remova-os se não precisar deles.
+
+Se você preferir um programa gráfico, pode usar filelight para o Plasma 5 . Ele mostra um resumo gráfico de todos os discos rígidos e você pode entrar e verificar os diretórios, depois entrar nos diretórios maiores e assim por diante até.
+
+Se você estiver usando o Gnome , pode instalar baobab. Existem algumas outras ferramentas listadas no Arch Wiki . Escolha o que quiser.
+
+PROGRAMAS DE LIMPEZA DE DISCO
+
+Existem também alguns programas de limpeza de disco que podem realizar muitas das tarefas listadas acima automaticamente. No entanto, como você usa o Arch Linux, não recomendo o uso desses programas. Nem sempre é óbvio o que exatamente será feito e você não tem controle total do seu sistema. Além disso, você pode excluir facilmente alguns arquivos de configuração que não deseja excluir.
+
+Mas eu ainda gostaria de compartilhar com vocês esta opção, pois alguns usuários ainda podem preferir o pacote completo para limpeza do sistema.
+
+Entre todos os programas de limpeza automática no Arch Linux, Bleachbit é provavelmente o mais popular. Ele tem uma interface gráfica agradável e pode fazer a maioria das coisas que mostrei acima. Por exemplo, você pode limpar o cache do sistema. Basta selecioná-lo e clicar no botão limpar.
+
+Confira as outras opções do Bleachbit. Eu acredito que a maioria deles são autoexplicativos.
+
+LIMPE O DIÁRIO DO SYSTEMD
+
+O Systemd armazena seus logs /var/log/journal/ e esses logs podem ser muito úteis, conforme descrevi em minha postagem em 10 coisas a fazer primeiro após instalar o Arch Linux . No entanto, esses arquivos de log podem ocupar até 10% do tamanho do seu sistema por padrão. Existem duas soluções para limitar esse tamanho.
+
+Você pode limpar esses arquivos de log manualmente quando ficar sem espaço. Você pode manter apenas os registros mais recentes por limite de tamanho (por exemplo, manter apenas 50 MB dos registros mais recentes):
+
+sudo journalctl --vacuum-size=50M
+
+Ou por limite de tempo (por exemplo, últimas 4 semanas):
+
+sudo journalctl --vacuum-time=4weeks
+
+Você também pode definir esse limite como permanente e nunca se preocupar em limpar os registros. Basta editar o arquivo /etc/systemd/journald.confremovendo o comentário SystemMaxUse=e definindo o limite de tamanho:
+SystemMaxUse=50M
+
+É isso que escolhi fazer e é por isso que perdi esse ponto quando escrevi este artigo originalmente. Simplesmente nunca experimentei grandes arquivos journalctl.
+

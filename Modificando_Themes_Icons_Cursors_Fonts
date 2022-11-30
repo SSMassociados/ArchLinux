@@ -1,0 +1,40 @@
+===> Themes
+
+Salvar no diretório de temas, crie caso não tenha:
+
+Para usuário local: ~/.themes/
+Todos os usuários: /usr/share/themes
+ 
+===> Icons
+
+Salvar no diretório de Icons, crie caso não tenha:
+
+Para usuário local: ~/.icons/ ou .local/share/icons/
+Todos os usuários: /usr/share/icons/
+
+===> Fonts
+
+Salvar no diretório de Fontes, crie caso não tenha:
+
+Para usuário local: ~/.fonts ou .local/share/fonts/
+Todos os usuários: /usr/share/fonts
+
+Atualizar o cache das fonts: fc-cache -vf
+
+===> Wallpaper
+
+Salvar no diretório de Backgrounds , crie caso não tenha:
+
+Para usuário local: ~/.backgrounds ou ~/.wallpapers
+Todos os usuários: /usr/share/backgrounds/
+
+===> Grub
+
+Salvar no diretório: /usr/share/grub/themes
+
+Updating grub config: grub-mkconfig -o /boot/grub/grub.cfg
+
+#Arch Manjaro
+pacman -S grub-customizer
+
+qt5ct qt5-styleplugins themix-theme-oomox qt5ct-refresh

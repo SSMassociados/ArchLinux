@@ -1,0 +1,110 @@
+
+Como instalar e configurar o Zsh no Arch Linux
+
+Antes de começar veja qual shell está usando (para não ter que reinstalar o Zsh:
+
+echo $SHELL
+
+Instale os pacotes necessários:
+
+sudo pacman -S zsh zsh-completions
+
+Inicie o Zsh pela primeira vez com o comando zsh (nas opções digite q)
+
+E agora podemos defini-lo como padrão padrão (adeus bash):
+
+chsh -s /bin/zsh
+sudo chsh -s /bin/zsh sidiclei_arch
+
+Como alterar o Shell padrão
+
+Vamos primeiro listar todos os Shells disponíveis em seu sistema GNU/Linux, digite:
+
+cat /etc/shells
+
+O Shell padrão para a maioria dos Sistemas GNU/Linux é o Bash (/ bin / bash). Antes de prosseguir, observe que:
+
+– Um usuário pode alterar seu Shell para qualquer Shell que esteja listado no arquivo / etc/shells.
+– Somente o superusuário (root) ou usuário com privilégio de superusuário pode alterar o Shell.
+1. usermod
+
+usermod é um utilitário para modificar os detalhes da conta de um usuário, armazenado no arquivo / etc/passwd e a opção -s ou -shell é usada para alterar o Shell de login do usuário.
+
+Neste exemplo, primeiro verificamos as informações da conta do usuário para ver seu Shell de login padrão.
+
+grep USUARIO /etc/passwd
+
+Em seguida, altere seu shell de login de /bin/bash para /bin/sh da seguinte maneira:
+
+sudo usermod --shell /bin/bash USUARIO
+
+2. chsh
+
+chsh é um utilitário de linha de comando para alterar o Shell de um usuário. Você altera o Shell passando a opção -s ou –shell, depois informando o Shell que vai ser usado e o nome do usuário.
+
+sudo chsh --shell /bin/sh USUARIO
+
+3. Alterando diretamente o arquivo /etc/passwd
+
+Neste método, basta abrir o arquivo /etc/passwd usando qualquer editor de texto e alterar o Shell do usuário que você queira.
+
+sudo vim /etc/passwd
+
+Arquivo /etc/passwd
+
+Quando tiver feito a edição, salve e feche o arquivo.
+
+# Install Zsh bash
+sudo pacman -S zsh
+
+# Verify installation
+zsh --version
+
+# Run zsh in terminal:
+zsh
+
+You will see options in terminal screen, 
+
+First hit 1 to continue to the main menu.
+
+Then hit 2 at Zsh main configuration menu, 
+It will set up the auto-complete system. 
+This system will automatically fill in commands 
+it detects within the history file
+
+Then hit 1 again, and hit 0 to exit and save settings.
+
+
+# Install Oh My Zsh
+sh -c "$(wget https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)"
+
+or gir clone:
+git clone https://github.com/robbyrussell/oh-my... ~/.oh-my-zsh
+
+
+# Change Zsh theme (agnoster)
+Oh my Zsh themes: https://github.com/robbyrussell/oh-my...
+sudo nano ~/.zshrc
+
+Change ZSH_THEME="robbyrussell" to ZSH_THEME="agnoster"
+
+Save and exit (CTRL+X, Y, Enter)
+
+# Change default shell for root and user
+sudo -s
+chsh -s /bin/zsh root  ( to set root)
+chsh -s /bin/zsh your_username (to set user)
+
+# Set Zsh your default shell (you can use this command if you want)
+chsh -s $(which zsh)
+
+
+# Logut and login to use Zsh
+
+After login 
+# Test that is work with: 
+echo $SHELL 
+(Expected result: /bin/zsh or similar) 
+
+Test version: 
+$SHELL –version

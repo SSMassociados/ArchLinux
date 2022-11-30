@@ -1,0 +1,11 @@
+polkit-gnome
+ 	
+    lxqt-policykit, which provides /usr/bin/lxqt-policykit-agent
+    lxsession, which provides /usr/bin/lxpolkit
+    mate-polkit, which provides /usr/lib/mate-polkit/polkit-mate-authentication-agent-1
+    polkit-efl-gitAUR, which provides /usr/bin/polkit-efl-authentication-agent-1
+    polkit-gnome, which provides /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
+    polkit-kde-agent, which provides /usr/lib/polkit-kde-authentication-agent-1
+    ts-polkitagentAUR, which provides /usr/lib/ts-polkitagent
+    xfce-polkit-gitAUR, which provides /usr/lib/xfce-polkit/xfce-polkit
+    polkit-dumb-agent-gitAUR, minimalistic desktop independent agent which provides /usr/bin/polkit-dumb-agent

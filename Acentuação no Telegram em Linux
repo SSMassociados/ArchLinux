@@ -1,0 +1,70 @@
+===> 1º SOLUÇÃO 
+
+CORRIGINDO ACENTUAÇÃO NO TELEGRAM EM LINUX
+
+Para corrigir o problema da falta de acentuação na versão desktop em Linux do Telegram, faça o seguinte:
+
+nano ~/.local/share/applications/telegramdesktop.desktop
+
+ou
+
+nano /usr/share/applications/telegramdesktop.desktop
+
+Altere a seguite linha:
+
+Exec=/home/[seu_usuário]/Telegram/Telegram -- %u
+
+Para:
+
+Exec=env QT_IM_MODULE=xim /home/[seu_usuário]/Telegram/Telegram -- %u
+
+Em alguns casos também é preciso alterar a linha:
+
+TryExec=/home/[seu_usuário]/Telegram/Telegram
+
+Para:
+
+TryExec=env QT_IM_MODULE=xim /home/[seu_usuário]/Telegram/Telegram
+
+Ou seja, basta adicionar:
+
+env QT_IM_MODULE=xim
+
+Antes do caminho em Exec e TryExec. Após isso só salvar o arquivo e reiniciar o Telegram.
+
+Abaixo está o meu arquivo telegramdesktop.desktop atualizado.
+
+Vale lembrar que:
+
+O caminho para o Telegram no Exec e TryExec pode variar de acordo com o local onde você tem a aplicação salva.
+
+ ===> 2º SOLUÇÃO
+ 
+colocar no .xprofile .bash_profile .zprofile
+
+export QT_IM_MODULE=xim
+
+ ===> 3º SOLUÇÃO 
+
+IBUS(TELEGRAM, WPS, KEEPASS...) 
+Fix acentos WPS Office (Telegram, Android Studio e outros QT) https://www.youtube.com/watch?v=ep6hLh6nUkU
+
+nano ~/.config/i3/config
+$exe ibus-daemon --xim -d -r
+
+sudo nano /etc/environment
+
+LANG=pt_BR.utf8
+
+# FIX ACENTOS EM PROGRAMAS QT
+GTK_IM_MODULE=ibus
+QT_IM_MODULE=ibus
+XMODIFIERS=@im=ibus
+
+Ou
+
+sudo su
+echo -e " \nLANG=pt_BR.utf8\n \nFIX ACENTOS EM PROGRAMAS QT\nGTK_IM_MODULE=ibus\nQT_IM_MODULE=ibus\nXMODIFIERS=@im=ibus" >> /etc/environment
+
+echo -e " \n# TEMA QT NO GTK DESKTOP\nexport QT_QPA_PLATFORMTHEME=qt5ct\nexport QT_AUTO_SCREEN_SCALE_FACTOR=0" >> /etc/environment
+

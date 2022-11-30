@@ -1,0 +1,188 @@
+Recuperar Boot (EFI) do Windows - Modo Boot DVD Instalação
+ 
+Inicie o computador com um DVD/USB de instalação do Windows, na tela do Idioma/Teclado selecione o teclado ABNT2 e Avance. Na próxima tela, a de Instalação, pressione SHIFT+F10 para chamar o CMD.
+
+Este tutorial se aplica em sistema UEFI/GPT.
+
+Passo 1: Vamos usar o Diskpart apenas para termos as letras das partições para usarmos na formatação da EFI e no comando para copiar o arquivo de boot da pasta Windows para a Partição EFI.
+
+> diskpart (Chamar a ferramenta Diskpart)
+> list disk (Listará os discos do seu computador)
+> select disk 0 (Onde 0 é o disco com o Windows instalado, identifique pelo tamanho do disco)
+
+Passo 2: Quando usamos um DVD/USB de instalação do Windows as letras das partições mudam. O comando abaixo mostrará a nova letra da partição C:, esta mudança é somente durante o uso do DVD/USB de instalação. Anote a nova letra da partição C:.
+
+> detail disk (Neste exemplo é a D:) Uma lista dos discos instalados no seu PC irá aparecer. Selecione aquele que tem o Windows instalado
+
+Continue com o comando
+> lis vol
+
+Passo 3: Voce verá que a Partição EFI não tem uma letra associada à ela, isto porque ela é oculta. Para esse caso já formate e atribua uma letra à Partição EFI:
+
+> list partition (Uma lista das partições desse disco será exibida)
+> select partition 1 (Onde 1 é a Partição EFI)
+> delete partition override
+> create partition efi
+> format quick fs=fat32 label="System"
+> assign letter="S"
+> detail disk (Anote a letra dada à Partição EFI, neste exemplo é a S:)
+> exit (Sair do diskpart)
+
+Passo 4: Vamos agora copiar o arquivo de boot para a Partição EFI, substitua as letras D:(Windows) e S:(Partição EFI) pelas suas.
+
+Use apenas um dos comandos abaixo.
+
+ Indicando a letra da Partição EFI e o tipo de firmware ALL (UEFI e BIOS Legacy):
+> bcdboot D:\Windows /s S: /f ALL
+
+ Indicando a letra da Partição EFI e o tipo de firmware apenas UEFI:
+> bcdboot D:\Windows /s S: /f UEFI
+
+Nos ítens B e C o parâmetro /s é obrigatório, o parâmetro S: indica a Partição EFI, e o parâmetro /f é obrigatório.
+
+Se quiser pode remover a letra atribuída à partição EFI:
+diskpart
+list volume
+select volume x (onde x é o número do volume e não a letra)
+remove letter Y (onde Y é a letra do volume)
+
+Feche o CMD, cancele a instalação e reinicie o computador.
+____________________________________________________________________________
+
+Outra opção é usar a ferramenta EasyUEFI Live (488MB), ou seja, um sistema que roda direto de um pendrive. Baixe o arquivo 'EasyUEFI_Enterprise_3.6_x64.iso' e grave em um pendrive, use o programa Rufus.
+
+Uma das opções é Rebuild (recriar) a partição.
+
+Atenção: O site tem muita publicidade, algumas podem conter malwares então use uma extensão bloqueadora de publicidade, recomendo o uBlock Origin
+
+https://www.fcportables.com/easyuefi-winpe/
+
+
+### Opções de linha de comando ###
+
+As seguintes opções de linha de comando estão disponíveis para BCDBoot.exe.
+
+BCDBOOT < fonte > [ / l < locale >] [ / s < volume-letra > [ / f < tipo de firmware >]] [ / v ] [ / m [{ GUID do carregador de SO }]] [ / addlast ou / p ] [ / d ] [ / c ]
+
+OPÇÕES DE LINHA DE COMANDO
+
+Opção	Descrição
+<source>
+
+Requeridos. Especifica a localização do diretório do Windows a ser usado como fonte para copiar os arquivos do ambiente de inicialização.
+
+O exemplo a seguir inicializa a partição do sistema usando arquivos BCD da pasta C: \ Windows:
+
+bcdboot C:\Windows
+
+
+/ l <locale>
+
+Opcional. Especifica o local. O padrão é inglês americano ( en-us).
+
+O exemplo a seguir define a localidade BCD padrão para japonês:
+
+bcdboot C:\Windows /l ja-jp
+
+
+/ s <letra de volume>
+
+Opcional. Especifica a letra do volume da partição do sistema. Esta opção não deve ser usada em cenários de implantação típicos.
+
+Use esta configuração para especificar uma partição do sistema ao configurar uma unidade que será inicializada em outro computador, como uma unidade flash USB ou uma unidade de disco rígido secundária.
+
+UEFI :
+
+O BCDBoot copia os arquivos de inicialização para a partição do sistema EFI ou para a partição especificada pela opção / s.
+
+BCDBoot cria o armazenamento BCD na mesma partição.
+
+Por padrão, o BCDBoot cria uma entrada do Gerenciador de inicialização do Windows na NVRAM do firmware para identificar os arquivos de inicialização na partição do sistema. Se a opção / s for usada, essa entrada não será criada. Em vez disso, o BCDBoot depende das configurações de firmware padrão para identificar os arquivos de inicialização na partição do sistema. De acordo com a especificação UEFI 2.3.1, as configurações de firmware padrão devem abrir o arquivo: \ efi \ boot \ bootx64.efi na partição do sistema EFI (ESP).
+
+BIOS :
+
+O BCDBoot copia os arquivos de inicialização para a partição ativa no disco rígido principal ou para a partição especificada pela opção / s.
+
+BCDBoot cria o armazenamento BCD na mesma partição.
+
+O exemplo a seguir copia arquivos BCD da pasta C: \ Windows para uma partição do sistema em um disco rígido secundário que será inicializado em outro computador. A partição do sistema na unidade secundária foi atribuída à letra de volume S :
+
+bcdboot C:\Windows /s S:
+
+
+O exemplo a seguir cria entradas de inicialização em uma unidade flash USB com a letra de volume S, incluindo arquivos de inicialização para oferecer suporte a um computador baseado em UEFI ou BIOS:
+
+bcdboot C:\Windows /s S: /f ALL
+
+
+/ f <tipo de firmware>
+
+Opcional. Especifica o tipo de firmware. Os valores válidos incluem UEFI, BIOSe ALL.
+
+Em sistemas baseados em BIOS / MBR, o valor padrão é BIOS. Esta opção cria o diretório \ Boot na partição do sistema e copia todos os arquivos necessários do ambiente de inicialização para este diretório.
+
+Em sistemas baseados em UEFI / GPT, o valor padrão é UEFI. Esta opção cria o diretório \ Efi \ Microsoft \ Boot e copia todos os arquivos necessários do ambiente de inicialização para este diretório.
+
+Quando você especifica o ALLvalor, BCDBoot cria os diretórios \ Boot e \ Efi \ Microsoft \ Boot e copia todos os arquivos de ambiente de inicialização necessários para BIOS e UEFI para esses diretórios.
+
+Se você especificar a opção / f , também deverá especificar a opção / s para identificar a letra do volume da partição do sistema.
+
+O exemplo a seguir copia os arquivos BCD que suportam a inicialização em um computador baseado em UEFI ou BIOS da pasta C: \ Windows para uma unidade flash USB que recebeu a letra de volume S :
+
+
+bcdboot C:\Windows /s S: /f ALL 
+
+
+
+/ v  
+
+Opcional. Ativa o modo detalhado. Exemplo:
+bcdboot C:\Windows /v
+
+
+
+
+/ m [ {GUID do carregador do SO} ]
+
+Opcional. Mescla os valores de uma entrada de inicialização existente em uma nova entrada de inicialização.
+
+Por padrão, esta opção mescla apenas objetos globais. Se você especificar um GUID do carregador do SO , esta opção mesclará o objeto carregador no modelo do sistema para produzir uma entrada inicializável.
+
+O exemplo a seguir mescla o carregador do sistema operacional no armazenamento BCD atual que o GUID especificado identifica no novo armazenamento BCD:
+
+bcdboot c:\Windows /m {xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}
+
+
+
+/ addlast
+
+Opcional. Especifica que a entrada de firmware do Gerenciador de inicialização do Windows deve ser adicionada por último. O comportamento padrão é adicioná-lo primeiro. Não pode ser usado com / p.
+
+bcdboot C:\Windows /addlast
+
+
+/ p
+
+Opcional. Especifica que a posição de entrada do firmware existente do Gerenciador de inicialização do Windows deve ser preservada na ordem de inicialização UEFI. Se a entrada não existir, uma nova entrada será adicionada na primeira posição. Não pode ser usado com / addlast.
+
+Por padrão, durante uma atualização, o BCDBoot move o gerenciador de inicialização do Windows para ser a primeira entrada na ordem de inicialização UEFI.
+
+bcdboot C:\Windows /p
+bcdboot C:\Windows /p /d
+
+
+
+/ d
+
+Opcional. Preserva a entrada do sistema operacional padrão existente no objeto {bootmgr} no Gerenciador de inicialização do Windows.
+
+bcdboot C:\Windows /d
+
+
+/ c
+
+Opcional. Especifica que nenhum elemento BCD existente deve ser migrado.
+
+Novo no Windows 10: Por padrão, durante uma atualização, os elementos BCD, como debugsettings ou flightigning, são preservados.
+
+bcdboot C:\Windows /c

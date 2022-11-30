@@ -1,0 +1,90 @@
+💢️ Como gerenciar dispositivos Bluetooth no Linux usando bluetoothctl
+  
+📌️ Verificando o status do Bluetooth
+
+Antes de adicionar dispositivos Bluetooth, o serviço Bluetooth no seu computador deve estar em funcionamento. Você pode verificá-lo com a ajuda do comando systemctl.
+
+sudo systemctl status bluetooth
+
+📌️ Se o status do serviço Bluetooth não estiver ativo, você terá que ativá-lo primeiro. Em seguida, inicie o serviço para que ele seja iniciado automaticamente sempre que você inicializar o computador.
+
+sudo systemctl enable bluetooth
+sudo systemctl start bluetooth
+
+📌️ Para pesquisar ativamente dispositivos Bluetooth aos quais você pode se conectar, use o comando de verificação da seguinte maneira:
+
+bluetoothctl scan on
+
+Quando você executa o comando acima, seu PC procurará e listará todos os dispositivos Bluetooth que estão ao alcance do seu sistema.
+
+Todos os dispositivos Bluetooth são rotulados como Dispositivo seguidos por seus respectivos endereços de Controle de Acesso ao Media (MAC), um identificador exclusivo para um dispositivo em uma rede. O endereço MAC segue o formato XX: XX : XX: XX: XX: XX. Bluetoothctl também exibe o nome do dispositivo, por exemplo, ruwido BLE na saída acima.
+
+Nota: Se você não conseguir encontrar o dispositivo Bluetooth que está procurando, certifique-se de que o seu sistema Bluetooth é detectável.
+
+Para tornar o seu adaptador Bluetooth detectável para outros dispositivos, use o seguinte comando:
+
+bluetoothctl discoverable on
+
+📌️ Conectando-se ao seu dispositivo
+
+Agora que você tem uma lista de dispositivos Bluetooth aos quais você pode se conectar, use o endereço MAC para conectar a um dispositivo específico.
+
+A maneira mais simples de se conectar com um dispositivo Bluetooth é emparelhar-lo com o seu PC usando o comando par.
+
+bluetoothctl pair FC:69:47:7C:9D:A3
+
+Nota: Lembre-se de substituir o endereço MAC FC:69:47:7C:A3 usado neste guia pelo respectivo endereço MAC do seu dispositivo.
+
+Se o dispositivo ao qual você está se conectando tiver uma interface GUI, por exemplo, um smartphone, o dispositivo exibirá um prompt pedindo que você aceite a conexão. O sistema também irá pedir-lhe para confirmar o emparelhamento no seu PC. Você pode fazer isso digitando sim na linha de comando.
+
+Para dispositivos que já estão emparelhados com o seu PC, você pode simplesmente se conectar a eles no futuro usando o comando connect da seguinte forma:
+
+bluetoothctl connect FC:69:47:7C:9D:A3
+
+📌️ Anúncio de dispositivos emparelhados com bluetoothctl
+
+Você pode olhar para os dispositivos que estão atualmente emparelhados com o seu sistema executando o seguinte comando:
+
+bluetoothctl paired-devices
+
+📌️ Você também pode listar dispositivos que estão dentro do alcance Bluetooth do seu computador usando o comando abaixo:
+
+bluetoothctl devices
+
+Confiando dispositivos emparelhados
+
+Além de emparelhar com um dispositivo Bluetooth, você também pode optar por confiar em determinados dispositivos para que você se conecte facilmente a eles no futuro.
+
+Para confiar em um dispositivo Bluetooth:
+
+bluetoothctl trust FC:69:47:7C:9D:A3
+
+Você pode não confiar em um dispositivo emitindo o seguinte comando:
+
+bluetoothctl untrust FC:69:47:7C:9D:A3
+
+ Desconectar dispositivos Bluetooth
+
+Para desemparelhar um dispositivo Bluetooth, use o comando remover da seguinte forma:
+
+bluetoothctl remove FC:69:47:7C:9D:A3
+
+Você também pode desconectar um dispositivo do seu sistema usando bluetoothctl:
+
+bluetoothctl disconnect FC:69:47:7C:9D:A3
+
+Se você deseja bloquear um dispositivo específico de se conectar ao seu sistema, você pode usar o comando de bloco seguido pelo endereço MAC do dispositivo.
+
+bluetoothctl block FC:69:47:7C:9D:A3
+
+Para desbloquear um dispositivo, basta substituir o bloco de palavras no comando acima mencionado por desbloqueio.
+
+💢️ Usando o modo interativo
+
+Como mencionado anteriormente, o bluetoothctl é um utilitário interativo. Neste guia, usamos comandos longos para evitar confusão, mas normalmente você deve usar o modo interativo porque é mais rápido e fácil de trabalhar.
+
+Para entrar no modo interativo, basta executar o comando bluetoothctl sem argumentos como segue:
+
+bluetoothctl
+
+Depois de mudar para o modo interativo, você pode emitir os comandos sem a necessidade do bluetoothctl

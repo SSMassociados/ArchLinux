@@ -1,0 +1,14 @@
+===> As etapas a seguir o ajudarão a remover um serviço systemd de um sistema Linux. 
+
+As etapas a seguir removerão a entrada do serviço do sistema.
+
+systemctl stop [servicename]
+systemctl disable [servicename]
+rm /etc/systemd/system/[servicename]
+rm /etc/systemd/system/[servicename] # and symlinks that might be related
+rm /usr/lib/systemd/system/[servicename] 
+rm /usr/lib/systemd/system/[servicename] # and symlinks that might be related
+systemctl daemon-reload
+systemctl reset-failed
+
+Depois de fazer as etapas acima, precisamos desinstalar / remover o software do sistema.

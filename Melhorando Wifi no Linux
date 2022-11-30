@@ -1,0 +1,101 @@
+Saiba como aproveitar ao máximo a sua conexão Wifi no Linux
+
+Para recarregar todos os arquivos de conexão do disco (por exemplo, após atualizar a senha VPN), você pode simplesmente:
+
+nmcli general reload
+
+===> Desativar o suporte ao 802.11n
+
+Mesmo que o padrão 802.11n ofereça mais recursos e maior velocidade de dados, muitos routers (principalmente os mais antigos) simplesmente não o suportam. Assim, uma maneira de aumentar a velocidade da sua rede wifi é desativar o protocolo 802.11n em sua máquina Linux – especialmente se a sua máquina usa o driver iwlwifi (chips Intel para rede sem fio). Para fazer isso, basta seguir esses passos:
+
+1 – Abrir o Terminal.
+
+2 – Descobrir qual driver o hardware wireless do seu computador usa:
+
+$ sudo lshw -C network
+
+description: Wireless interface
+       product: Wi-Fi 6 AX200
+       vendor: Intel Corporation
+       physical id: 0
+       bus info: pci@0000:07:00.0
+       logical name: wlp7s0
+       version: 1a
+       serial: d0:ab:d5:1b:b1:6f
+       width: 64 bits
+       clock: 33MHz
+       capabilities: pm msi pciexpress msix bus_master cap_list ethernet physical wireless
+       configuration: broadcast=yes driver=iwlwifi driverversion=5.11.7-arch1-1 firmware=59.601f3a66.0 cc-a0-59.ucode ip=192.168.1.99 latency=0 link=yes multicast=yes wireless=IEEE 802.11
+       resources: irq:18 memory:f7900000-f7903fff
+
+
+3 – Localizar o driver na seção ‘descrição: Interface sem fio’ – em destaque no resultado do comando anterior.
+
+4 – Como root, execute o comando:
+
+O comando abaixo realizará uma mudança permanente no sistema!
+
+$ sudo echo “options iwlwifi 11n_disable=1 >> /etc/modprobe.d/iwlwifi.conf
+
+Onde, no caso de exemplo NOME-DRIVER é iwlwifi
+
+5 – Por fim, reiniciar o sistema.
+
+===> Desativar a gestão de energia
+
+Algumas placas de rede sem fio suportam o gerenciamento de energia (power management). Este recurso pode, por vezes, prejudicar à qualidade na conexão wifi. Se sua placa wireless tem esse suporte, você pode desativar o recurso de gerenciamento de energia com um simples comando:
+
+$ iwconfig wlp7s0 power off
+
+Contudo, a cada reinício da máquina essa configuração será perdida. Assim, crie um script para invocar essa configuração a cada momento que sua máquina seja ligada:
+
+$ sudo gedit wifipower
+
+#!/bin/sh
+/sbin/iwconfig wlp7s0 power off
+
+$ sudo chmod u+x wifipower
+$ sudo mv wifipower /etc/init.d/
+$ update-rc.d wifipower defaults
+
+===> SEGUNDA ALTERNATIVA > melhor
+
+Verificar se o gerenciamento de energia está desligado: 
+
+iwconfig wlp7s0 | grep "Power Management"
+
+Crie este arquivo com seu editor de texto favorito, caso não tenha o arquivo:
+
+sudo gedit /etc/NetworkManager/conf.d/default-wifi-powersave-on.conf
+
+[connection]
+wifi.powersave = 2
+
+# Values are 0 (use default), 1 (ignore/don't touch), 2 (disable) or 3 (enable)
+
+ou modifique caso já tenha o arquivo: sudo sed -i 's/wifi.powersave = 3/wifi.powersave = 2/' /etc/NetworkManager/conf.d/default-wifi-powersave-on.conf
+
+Reinicialize o serviço para que a alteração tenha efeito: systemctl restart NetworkManager
+
+Os valores possíveis para o wifi.powersavecampo são:
+
+NM_SETTING_WIRELESS_POWERSAVE_DEFAULT (0): use o valor padrão
+NM_SETTING_WIRELESS_POWERSAVE_IGNORE  (1): não toque na configuração existente
+NM_SETTING_WIRELESS_POWERSAVE_DISABLE (2): desativar economia de energia
+NM_SETTING_WIRELESS_POWERSAVE_ENABLE  (3): habilitar economia de energia
+
+===> Configurar o BSSID
+
+Você sabia que o Linux Network Manager analisa a rede sem fio a cada dois minutos? Isso pode realmente causar problemas com a conexão. Se seu uso da rede wifi é familiar/doméstico ou particular, você pode definir o valor do campo BSSID para o endereço MAC do seu router; isso impedirá que o Network Manager faça uma verificação por pontos de acesso em uma rede sem fio particular/privada.
+
+1 – Abra o Network Manager
+
+2 – Selecione a conexão de rede sem fio que você deseja conectar
+
+3 – Clique em Editar
+
+4 – Na aba Wifi, clique no menu suspenso BSSID (vide figura)
+
+5 – Selecione o endereço MAC do router (se ele não aparecer, você terá que localizá-lo no seu roteador e inserí-lo manualmente)
+
+6 – Clique em Salvar
